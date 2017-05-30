@@ -1,16 +1,25 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import SparkChart from '../components/chart';
+import GoogleMap from '../components/google_map';
 
 
 class WeatherList extends Component {
 
   renderWeather = (cityData) => {
     const name = cityData.city.name;
+    // do a temp conversion here if wanted
     const temps = cityData.list.map(weather => weather.main.temp);
+    const pressures = cityData.list.map(weather => weather.main.pressure);
+    const humidities = cityData.list.map(weather => weather.main.humidity);
+    const { lon, lat } = cityData.city.coord;
+
     return (
       <tr key={name}>
-        <td>{name}</td>
-        <td></td>
+        <td><GoogleMap lon={lon} lat={lat} /></td>
+        <td><SparkChart data={temps} color='orange' units='K'/></td>
+        <td><SparkChart data={pressures} color='green' units='hPa' /></td>
+        <td><SparkChart data={humidities} color='blue' units='%' /></td>
       </tr>
     )
   }
@@ -21,13 +30,13 @@ class WeatherList extends Component {
         <thead>
           <tr>
             <th>City</th>
-            <th>Temperature</th>
-            <th>Pressure</th>
-            <th>Humidity</th>
+            <th>Temperature (K)</th>
+            <th>Pressure (HPA)</th>
+            <th>Humidity (%)</th>
           </tr>
         </thead>
         <tbody>
-          {this.props.weather.map((city) => this.renderWeather(city))}
+          {this.props.weather.map(this.renderWeather)}
         </tbody>
       </table>
     );
